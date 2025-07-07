@@ -2,7 +2,7 @@
   <div id="app">
     <header>
       <span class="logo">🏠</span>
-      <h1>房屋收據產生器</h1>
+      <h1>租屋電子文件產生器</h1>
       <nav class="navbar">
         <button
           v-for="tab in tabs"
@@ -18,6 +18,7 @@
     <main>
       <DepositForm v-if="activeTab === 'deposit'" />
       <DepositGuarantee v-if="activeTab === 'guarantee'" />
+      <ContractSign v-if="activeTab === 'contract'" />
     </main>
     <footer>
       <small>
@@ -33,10 +34,12 @@
 import { ref } from 'vue'
 import DepositForm from './components/DepositForm.vue'
 import DepositGuarantee from './components/GuaranteeForm.vue' // 你可以先複製一份 DepositForm 內容當樣板
+import ContractSign from './components/ContractSign.vue'
 
 const tabs = [
   { label: '訂金', value: 'deposit' },
-  { label: '押金', value: 'guarantee' }
+  { label: '押金', value: 'guarantee' },
+  {label: '租約', value: 'contract'}
 ]
 const activeTab = ref('deposit')
 </script>

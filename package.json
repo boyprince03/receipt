@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "vue-signature-pad": "^3.0.2",
+    "vue3-signature": "^0.2.4"
+  }
+}

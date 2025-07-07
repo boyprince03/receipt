@@ -12,7 +12,7 @@ function applyTemplate(template, data) {
 router.post('/generate', async (req, res) => {
   let browser;
   try {
-    const { roomNo, tenant, landlord, rentfee ,deposit, address, startDate, endDate, today,templateType } = req.body;
+    const { roomNo, tenant, landlord, rentfee ,deposit, address, startDate, endDate, today,templateType, signature} = req.body;
 
 let templateFile;
   if (templateType === 'Guarantee') {
@@ -25,13 +25,14 @@ let templateFile;
 
     // 全欄位自動帶入
     const filled = applyTemplate(template, {
-      roomNo, tenant, landlord, deposit, address, startDate, endDate, today,rentfee
+      roomNo, tenant, landlord, deposit, address, startDate, endDate, today,rentfee,signature
     });
 
     // Puppeteer 產 PDF
     browser = await puppeteer.launch({ headless: "new", args: ['--no-sandbox'] });
     const page = await browser.newPage();
     await page.setContent(filled, { waitUntil: 'networkidle0' });
+    // await page.setContent(filled, { waitUntil: 'domcontentloaded' });
 
     const pdfBuffer = await page.pdf({ format: 'A4' });
 
