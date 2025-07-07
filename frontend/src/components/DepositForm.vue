@@ -56,7 +56,7 @@ const landlord = ref('王子建(Steve)')
 const deposit = ref(1000)
 const address = ref('')
 const startDate = ref(getTodayString())
-const downloading = ref(false)
+
 const computedEndDate = computed(() => {
   if (!startDate.value) return ''
   const date = new Date(startDate.value)
@@ -86,8 +86,7 @@ function getTodayString() {
 }
 
 
-
-
+const downloading = ref(false)
 const apiBase = import.meta.env.VITE_API_BASE
 
 const generatePDF = async () => {
