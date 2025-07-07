@@ -25,7 +25,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
-app.use('/pdf', pdfRouter); // 新增這行
+app.use('/pdf', pdfRouter);
+app.use('/api/pdf', pdfRouter); // 新增這行
 
 
 // catch 404 and forward to error handler

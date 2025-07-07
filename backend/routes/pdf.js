@@ -12,7 +12,11 @@ function applyTemplate(template, data) {
 router.post('/generate', async (req, res) => {
   let browser;
   try {
+<<<<<<< HEAD
     const { roomNo, tenant, landlord, rentfee ,deposit, address, startDate, endDate, today,templateType, signature} = req.body;
+=======
+    const { roomNo, tenant, landlord, rentfee ,deposit, address, startDate, endDate, today, templateType } = req.body;
+>>>>>>> 5154b9a0a540ad935fd85c042450a7dc77d50191
 
 let templateFile;
   if (templateType === 'Guarantee') {
@@ -31,8 +35,12 @@ let templateFile;
     // Puppeteer 產 PDF
     browser = await puppeteer.launch({ headless: "new", args: ['--no-sandbox'] });
     const page = await browser.newPage();
+<<<<<<< HEAD
     await page.setContent(filled, { waitUntil: 'networkidle0' });
     // await page.setContent(filled, { waitUntil: 'domcontentloaded' });
+=======
+    await page.setContent(filled, { waitUntil: 'domcontentloaded' });
+>>>>>>> 5154b9a0a540ad935fd85c042450a7dc77d50191
 
     const pdfBuffer = await page.pdf({ format: 'A4' });
 
