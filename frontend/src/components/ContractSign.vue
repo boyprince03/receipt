@@ -24,20 +24,20 @@
         <input v-model="form.rentfee" placeholder="房間月租金" type="number" min="0" />
     </div>
     <div class="input-row"><label>押金</label>
-        <input :value="computedDeposit" placeholder="押金金額" type="text" readonly />
+        <input :value="form.deposit" placeholder="押金金額" type="text" readonly />
     </div>
     <div class="input-row"><label>租期</label><input v-model="form.duration" readonly /></div>
     <div class="input-row"><label>起租日</label><input v-model="form.startDate" type="date" required /></div>
     <div class="input-row"><label>退租日</label>
-        <input :value="computedEndDate" placeholder="截止日" type="date" readonly />
+        <input :value="form.endDate" placeholder="截止日" type="date" readonly />
     </div>
 
     <!-- 前往簽名彈窗 -->
-    <div class="sign-row">
+    <!-- <div class="sign-row">
       <button type="button" @click="showSignModal = true" class="sign-btn">前往簽名</button>
       <span v-if="form.signature">已完成簽名 <img :src="form.signature" style="height:36px; border:1px solid #aaa" /></span>
     </div>
-    <Signature v-model:visible="showSignModal" @confirm="setSignature"/>
+    <Signature v-model:visible="showSignModal" @confirm="setSignature"/> -->
     <div class="btn-row">
       <button type="submit" class="next-btn">下一步（合約預覽確認）</button>
     </div>
@@ -47,7 +47,7 @@
   <div v-else-if="step === 2" class="contract-preview">
     <h3>合約條款預覽</h3>
     <div class="preview-content">
-        <Preview :form="form.value" />
+        <Preview :form="form" />
     </div>
 
     <div class="confirm-check">
@@ -60,7 +60,7 @@
         class="submit-btn"
         @click="submitContract"
       >產生PDF</button>
-      <button class="back-btn" @click="step=1" style="margin-left:18px;">返回修改</button>
+      <button class="back-btn" @click="step=1" >返回修改</button>
     </div>
     <div v-if="loading" class="loading">PDF 產生中…</div>
   </div>
@@ -68,8 +68,9 @@
 
 <script setup>
 import { ref, computed,watch } from 'vue'
-import Signature from './Signature.vue'
 import Preview from './Preview.vue'
+import axios from 'axios'
+
 
 const step = ref(1)
 const isChecked = ref(false)
@@ -79,7 +80,7 @@ const showSignModal = ref(false)
 const form = ref({
   roomNo: '', address: '基隆市中山區復興路389-3號', tenant: '', tenantId: '', tenantPhone: '',
   landlord: '王子建', landlordId: 'H124054268', landlordPhone: '0929511011', rentfee: '', deposit: '',
-  duration: '1', startDate: getTodayString(), endDate: '', signature: ''
+  duration: '1', startDate: getTodayString(), endDate: '', signature: '',today: getTodayRoc()
 })
 const roomList = ref([401, 402, 403, 501, 502, 503, 504])
 const rentfeeList = ref([7000, 7000, 10000, 5500, 5500, 5000, 4000])
@@ -108,28 +109,39 @@ watch(() => form.value.deposit, (val) => {
 watch(() => form.value.endDate, (val) => {
   console.log('enddate:', val)
 })
-// 押金 = 月租金 * 2
-const computedDeposit = computed(() => {
-  const fee = Number(form.value.rentfee)
-  if (!fee || isNaN(fee)) return ''
-  return fee * 2
-})
+watch(
+  () => form.value.rentfee,
+  (fee) => {
+    const n = Number(fee)
+    if (!n || isNaN(n)) {
+      form.value.deposit = ''
+    } else {
+      form.value.deposit = n * 2
+    }
+  },
+  { immediate: true }
+)
 
 
-
-
-// 截止日自動計算
-const computedEndDate = computed(() => {
-  if (!form.value.startDate) return ''
-  const endDuration = Number(form.value.duration)
-  const date = new Date(form.value.startDate)
-  date.setFullYear(date.getFullYear() + endDuration)
-  date.setDate(date.getDate() - 1) // 不含第一天
-  const yyyy = date.getFullYear()
-  const mm = String(date.getMonth() + 1).padStart(2, '0')
-  const dd = String(date.getDate()).padStart(2, '0')
-  return `${yyyy}-${mm}-${dd}`
-})
+// 自動同步退租日
+watch(
+  [() => form.value.startDate, () => form.value.duration],
+  ([start, duration]) => {
+    if (!start) {
+      form.value.endDate = ''
+      return
+    }
+    const endDuration = Number(duration)
+    const date = new Date(start)
+    date.setFullYear(date.getFullYear() + endDuration)
+    date.setDate(date.getDate() - 1)
+    const yyyy = date.getFullYear()
+    const mm = String(date.getMonth() + 1).padStart(2, '0')
+    const dd = String(date.getDate()).padStart(2, '0')
+    form.value.endDate = `${yyyy}-${mm}-${dd}`
+  },
+  { immediate: true }
+)
 
 const setSignature = img => { form.value.signature = img }
 
@@ -152,13 +164,10 @@ function getTodayString() {
 
 // 檢查填寫與簽名
 function showConfirm() {
-  if (!form.value.signature) { alert('請完成電子簽名！'); return }
-  // 檢查其他必要欄位
-  for (let k of ['roomNo','address','tenant','landlord','rentfee','startDate']) {
+  for (let k of ['roomNo','address','tenant','landlord','rentfee','startDate','deposit','endDate']) {
     if (!form.value[k]) { alert('請確實填寫所有必要欄位'); return }
   }
-  if (!computedDeposit.value || !computedEndDate.value) {
-  alert('請確實填寫所有必要欄位'); return }
+
 
 
   step.value = 2
@@ -167,29 +176,31 @@ function showConfirm() {
 
 
 
+const apiBase = import.meta.env.VITE_API_BASE
 const submitContract = async () => {
+  if (!form.value.signature) { alert('請完成電子簽名！'); return }
   if (!isChecked.value) return
   loading.value = true
   try {
-    const res = await fetch(import.meta.env.VITE_API_BASE + '/pdf/generate', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
+    const res = await axios.post(
+      `http://localhost:3000/pdf/generate`,
+      {
         ...form.value,
         today: getTodayRoc(),
-        templateType: 'Guarantee'
-      })
-    })
-    if (!res.ok) throw new Error('PDF 產生失敗')
-    const blob = await res.blob()
-    const url = URL.createObjectURL(blob)
+        templateType: 'Contract'
+      },
+      { responseType: 'arraybuffer' }
+    )
+    const blob = new Blob([res.data], { type: 'application/pdf' })
+    const url = window.URL.createObjectURL(blob)
     const a = document.createElement('a')
     a.href = url
     a.download = '租賃合約.pdf'
     a.click()
-    URL.revokeObjectURL(url)
+    window.URL.revokeObjectURL(url)
   } catch (e) {
     alert('產生 PDF 失敗，請稍後重試。')
+    console.error(e)
   } finally {
     loading.value = false
   }
