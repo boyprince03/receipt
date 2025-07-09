@@ -313,6 +313,12 @@ function handleLandlordPwdOk() {
 
   <div class="sign-area">
     <p>契約審閱權：本契約於中華民國 {{form.today}} 經承租人攜回審閱或放棄審閱之權利。</p>
+    <!-- 契約書人資訊區 -->
+<p>立契約書人</p>
+<ul>
+    <li>出租人：{{form.landlord}}，身分證字號：{{form.landlordId}}，聯絡電話：{{form.landlordPhone}}</li>
+    <li>承租人：{{form.tenant}}，身分證字號：{{form.tenantId}}，聯絡電話：{{form.tenantPhone}}</li>
+</ul>
     </div>
 </div>
 <!-- 簽名區塊 -->
@@ -351,6 +357,7 @@ function handleLandlordPwdOk() {
   </tr>
 </table>
 
+<p>中華民國 {{form.today}}</p>
 <!-- 將所有彈窗與自訂元件都放在表格外面！ -->
 <!-- 房東密碼彈窗 -->
 <div v-if="showLandlordPwdModal" class="modal-mask">
@@ -369,13 +376,4 @@ function handleLandlordPwdOk() {
 
 <!-- 承租人簽名元件彈窗 -->
 <Signature v-model:visible="showSignModal" @confirm="setSignature" />
-
-<!-- 契約書人資訊區 -->
-<p>立契約書人</p>
-<ul>
-    <li>出租人：{{form.landlord}}，身分證字號：{{form.landlordId}}，聯絡電話：{{form.landlordPhone}}</li>
-    <li>承租人：{{form.tenant}}，身分證字號：{{form.tenantId}}，聯絡電話：{{form.tenantPhone}}</li>
-</ul>
-<p>中華民國 {{form.today}}</p>
-
 </template>

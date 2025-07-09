@@ -26,7 +26,7 @@
     <div class="input-row"><label>押金</label>
         <input :value="form.deposit" placeholder="押金金額" type="text" readonly />
     </div>
-    <div class="input-row"><label>租期</label><input v-model="form.duration" readonly /></div>
+    <div class="input-row"><label>租期</label><input v-model="form.duration" type="number" required /></div>
     <div class="input-row"><label>起租日</label><input v-model="form.startDate" type="date" required /></div>
     <div class="input-row"><label>退租日</label>
         <input :value="form.endDate" placeholder="截止日" type="date" readonly />
