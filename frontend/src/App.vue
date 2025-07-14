@@ -4,44 +4,29 @@
       <span class="logo">🏠</span>
       <h1>租屋電子文件產生器</h1>
       <nav class="navbar">
-        <button
-          v-for="tab in tabs"
-          :key="tab.value"
-          :class="{ active: tab.value === activeTab }"
-          @click="activeTab = tab.value"
-        >
-          {{ tab.label }}
-        </button>
+        <router-link to="/" class="nav-btn" exact-active-class="active">首頁</router-link>
+        <router-link to="/deposit" class="nav-btn" active-class="active">訂金收據</router-link>
+        <router-link to="/guarantee" class="nav-btn" active-class="active">押金收據</router-link>
+        <router-link to="/contract" class="nav-btn" active-class="active">電子化租約及簽署</router-link>
+        <router-link to="/dashboard" class="nav-btn" active-class="active">房屋管理</router-link>
       </nav>
     </header>
 
     <main>
-      <DepositForm v-if="activeTab === 'deposit'" />
-      <DepositGuarantee v-if="activeTab === 'guarantee'" />
-      <ContractSign v-if="activeTab === 'contract'" />
+      <router-view />
     </main>
+
     <footer>
       <small>
-        &copy; {{ year }} Steve 訂金收據產生器 &mdash; Powered by Vue + Node.js<br>
+        &copy; {{ new Date().getFullYear() }} Steve 訂金收據產生器 &mdash; Powered by Vue + Node.js<br>
         <span class="footer-tip">✨ 範本樣式可自訂、資料僅本地處理更安心 ✨</span>
       </small>
     </footer>
-
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue'
-import DepositForm from './components/DepositForm.vue'
-import DepositGuarantee from './components/GuaranteeForm.vue' // 你可以先複製一份 DepositForm 內容當樣板
-import ContractSign from './components/ContractSign.vue'
-
-const tabs = [
-  { label: '訂金', value: 'deposit' },
-  { label: '押金', value: 'guarantee' },
-  {label: '租約', value: 'contract'}
-]
-const activeTab = ref('deposit')
+// 不需要引入各頁面，交給 router-view 處理
 </script>
 
 <style>
@@ -61,10 +46,11 @@ header {
 .navbar {
   display: flex;
   justify-content: center;
-  gap: 28px;
+  gap: 24px;
   margin: 18px 0 18px 0;
+  flex-wrap: wrap;
 }
-.navbar button {
+.nav-btn {
   background: #fff;
   border: 1.5px solid #88a8e6;
   border-radius: 24px;
@@ -73,8 +59,10 @@ header {
   color: #2767c7;
   cursor: pointer;
   transition: background .2s, color .2s;
+  text-decoration: none;
+  font-weight: bold;
 }
-.navbar button.active, .navbar button:hover {
+.nav-btn.active, .nav-btn.router-link-active, .nav-btn.router-link-exact-active, .nav-btn:hover {
   background: #e3edfa;
   color: #18489c;
   border-color: #3870dd;
@@ -86,7 +74,6 @@ main {
   align-items: flex-start;
   margin-bottom: 20px;
 }
-
 footer {
   text-align: center;
   padding: 18px 0 10px 0;

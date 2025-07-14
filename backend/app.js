@@ -1,48 +1,40 @@
-var createError = require('http-errors');
-var express = require('express');
-var cors = require('cors');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var logger = require('morgan');
+const express = require('express');
+const cors = require('cors');
+const app = express();
 
-var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
-var pdfRouter = require('./routes/pdf');  // 新增這行
+const rentfeeRouter = require('./routes/rentfee');
+const roomRouter = require('./routes/room');
+const pdfRouter = require('./routes/pdf');   // <--- 保留 PDF 路由
+const electricityRouter = require('./routes/electricity');
+const housesRouter = require('./routes/houses');
+const joinRouter = require('./routes/room-join-tenant');
 
 
-var app = express();
 
-// view engine setup
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'jade');
+
+
 
 app.use(cors());
-app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', indexRouter);
-app.use('/users', usersRouter);
-app.use('/pdf', pdfRouter);
-app.use('/api/pdf', pdfRouter); // 新增這行
+// API 路由
+app.use('/api/rentfee', rentfeeRouter);
+app.use('/api/room', roomRouter);
+app.use('/api/pdf', pdfRouter);     // <--- PDF 路由掛上來
+app.use('/api/electricity', electricityRouter);
+app.use('/api/houses', housesRouter);
+app.use('/api/room-join-tenant', joinRouter);
 
-
-// catch 404 and forward to error handler
-app.use(function(req, res, next) {
-  next(createError(404));
+// 404 處理
+app.use((req, res) => {
+  res.status(404).json({ error: 'Not found' });
 });
 
-// error handler
-app.use(function(err, req, res, next) {
-  // set locals, only providing error in development
-  res.locals.message = err.message;
-  res.locals.error = req.app.get('env') === 'development' ? err : {};
-
-  // render the error page
-  res.status(err.status || 500);
-  res.render('error');
+// 全域錯誤處理
+app.use((err, req, res, next) => {
+  console.error(err);
+  res.status(500).json({ error: err.message || 'Internal server error' });
 });
 
 module.exports = app;
