@@ -183,7 +183,7 @@ const submitContract = async () => {
   loading.value = true
   try {
     const res = await axios.post(
-      `http://localhost:3000/pdf/generate`,
+      `${apiBase}/pdf/generate`,
       {
         ...form.value,
         today: getTodayRoc(),
