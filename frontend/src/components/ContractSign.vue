@@ -1,7 +1,7 @@
 <template>
   <!-- STEP 1: 表單填寫 & 簽名 -->
   <form v-if="step === 1" class="form-area" @submit.prevent="showConfirm">
-    <h2>租賃合約電子簽署</h2>
+    <h2>租屋合約電子簽署</h2>
     <div class="input-row"><label>房號</label>
         <input v-model="form.roomNo" list="room-options" placeholder="房號" required />
         <datalist id="room-options">

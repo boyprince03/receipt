@@ -22,7 +22,7 @@
     </main>
     <footer>
       <small>
-        &copy; {{ year }} Steve 訂金收據產生器 &mdash; Powered by Vue + Node.js<br>
+        &copy; {{ year }} Steve 租屋文件產生器 &mdash; Powered by Vue + Node.js<br>
         <span class="footer-tip">✨ 範本樣式可自訂、資料僅本地處理更安心 ✨</span>
       </small>
     </footer>
