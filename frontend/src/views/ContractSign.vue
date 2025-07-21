@@ -1,43 +1,38 @@
 <template>
   <!-- STEP 1: 表單填寫 & 簽名 -->
-  <form v-if="step === 1" class="form-area" @submit.prevent="showConfirm">
+  <form v-if="step === 1" class="form" @submit.prevent="showConfirm">
     <h2>租賃合約電子簽署</h2>
-    <div class="input-row"><label>房號</label>
+    <div class="input-clear-group">
         <input v-model="form.roomNo" list="room-options" placeholder="房號" required />
         <datalist id="room-options">
           <option v-for="item in roomList" :key="item" :value="item" />
         </datalist>
     </div>
-    <div class="input-row"><label>租賃地址</label>
+    <div class="input-clear-group">
         <input v-model="form.address" list="address-options" placeholder="地址" required/>
     <datalist id="address-options">
         <option v-for="item in addressList" :key="item" :value="item" />
     </datalist>
     </div>
-    <div class="input-row"><label>承租人</label><input v-model="form.tenant" required /></div>
-    <div class="input-row"><label>承租人身分證</label><input v-model="form.tenantId" required /></div>
-    <div class="input-row"><label>承租人電話</label><input v-model="form.tenantPhone" required /></div>
-    <div class="input-row"><label>出租人</label><input v-model="form.landlord" required /></div>
-    <div class="input-row"><label>出租人身分證</label><input v-model="form.landlordId" required /></div>
-    <div class="input-row"><label>出租人電話</label><input v-model="form.landlordPhone" required /></div>
-    <div class="input-row"><label>租金</label>
-        <input v-model="form.rentfee" placeholder="房間月租金" type="number" min="0" />
+    <div class="input-clear-group"><input v-model="form.tenant" placeholder="承租人真實姓名..." required /></div>
+    <div class="input-clear-group">
+      <input v-model="form.tenantId" placeholder="承租人身分證或居留證號..." required @blur="checkTenantId" />
+      <div v-if="tenantIdError" class="error-text">{{ tenantIdError }}</div>
     </div>
-    <div class="input-row"><label>押金</label>
-        <input :value="form.deposit" placeholder="押金金額" type="text" readonly />
+    <div class="input-clear-group">
+      <input v-model="form.tenantPhone" placeholder="承租人電話 EX:09xx123456 或 02-12345678" required @blur="checkTenantPhone" />
+      <div v-if="tenantPhoneError" class="error-text">{{ tenantPhoneError }}</div>
     </div>
-    <div class="input-row"><label>租期</label><input v-model="form.duration" readonly /></div>
-    <div class="input-row"><label>起租日</label><input v-model="form.startDate" type="date" required /></div>
-    <div class="input-row"><label>退租日</label>
-        <input :value="form.endDate" placeholder="截止日" type="date" readonly />
+    <div class="input-clear-group"><input v-model="form.landlord" placeholder="出租人" required /></div>
+    <div class="input-clear-group">
+      <input v-model="form.landlordId" placeholder="出租人身分證字號" required />
     </div>
-
-    <!-- 前往簽名彈窗 -->
-    <!-- <div class="sign-row">
-      <button type="button" @click="showSignModal = true" class="sign-btn">前往簽名</button>
-      <span v-if="form.signature">已完成簽名 <img :src="form.signature" style="height:36px; border:1px solid #aaa" /></span>
-    </div>
-    <Signature v-model:visible="showSignModal" @confirm="setSignature"/> -->
+    <div class="input-clear-group"><input v-model="form.landlordPhone" placeholder="出租人電話"  required /></div>
+    <div class="input-clear-group"><input v-model="form.rentfee" placeholder="房間月租金" type="number" min="0" /></div>
+    <div class="input-clear-group"><input :value="form.deposit" placeholder="押金金額" type="text" readonly /></div>
+    <div class="input-clear-group"><input type="number" step="0.5" v-model.number="form.duration" min="0.5" placeholder="租期" required /></div>
+    <div class="input-clear-group"><input v-model="form.startDate" type="date" placeholder="起租日" required /></div>
+    <div class="input-clear-group"><input :value="form.endDate" placeholder="退租日" type="date" readonly /></div>
     <div class="btn-row">
       <button type="submit" class="next-btn">下一步（合約預覽確認）</button>
     </div>
@@ -76,9 +71,11 @@ const step = ref(1)
 const isChecked = ref(false)
 const loading = ref(false)
 const showSignModal = ref(false)
+const tenantIdError = ref('');
+const tenantPhoneError = ref('');
 
 const form = ref({
-  roomNo: '', address: '基隆市中山區復興路389-3號', tenant: '', tenantId: '', tenantPhone: '',
+  roomNo: '401', address: '基隆市中山區復興路389-3號', tenant: '', tenantId: '', tenantPhone: '',
   landlord: '王子建', landlordId: 'H124054268', landlordPhone: '0929511011', rentfee: '', deposit: '',
   duration: '1', startDate: getTodayString(), endDate: '', signature: '',today: getTodayRoc()
 })
@@ -127,14 +124,18 @@ watch(
 watch(
   [() => form.value.startDate, () => form.value.duration],
   ([start, duration]) => {
-    if (!start) {
+    if (!start || !duration) {
       form.value.endDate = ''
       return
     }
-    const endDuration = Number(duration)
     const date = new Date(start)
-    date.setFullYear(date.getFullYear() + endDuration)
-    date.setDate(date.getDate() - 1)
+    const years = Math.floor(Number(duration))            // 取整年
+    const months = Math.round((Number(duration) - years) * 12)  // 剩餘月（可0）
+
+    date.setFullYear(date.getFullYear() + years)
+    date.setMonth(date.getMonth() + months)
+    date.setDate(date.getDate() - 1) // 退一天
+
     const yyyy = date.getFullYear()
     const mm = String(date.getMonth() + 1).padStart(2, '0')
     const dd = String(date.getDate()).padStart(2, '0')
@@ -142,6 +143,7 @@ watch(
   },
   { immediate: true }
 )
+
 
 const setSignature = img => { form.value.signature = img }
 
@@ -153,7 +155,7 @@ function getTodayRoc() {
   const date = String(d.getDate()).padStart(2, '0')
   return `${year} 年 ${month} 月 ${date} 日`
 }
-
+//取得今天日期
 function getTodayString() {
   const today = new Date()
   const yyyy = today.getFullYear()
@@ -173,6 +175,44 @@ function showConfirm() {
   step.value = 2
   isChecked.value = false
 }
+
+//驗證身分證居留證格式
+function validateId(id) {
+  // 身分證: 1個英文字+9個數字
+  const idReg = /^[A-Z][12]\d{8}$/i;
+  // 新/舊居留證（最基本）：兩個英+8數 or 1英+9數
+  const arcReg1 = /^[A-Z]{2}\d{8}$/i;
+  const arcReg2 = /^[A-Z]\d{9}$/i;
+  return idReg.test(id) || arcReg1.test(id) || arcReg2.test(id);
+}
+function checkTenantId() {
+  if (!validateId(form.value.tenantId)&&form.value.tenantId != '') {
+    tenantIdError.value = '格式錯誤，請輸入正確身分證或居留證號';
+  } else {
+    tenantIdError.value = '';
+  }
+}
+
+//驗證電話格式
+function validatePhone(phone) {
+  // 手機
+  const mobile = /^09\d{8}$/;
+  // 市話(區碼2~8開頭, 長度合乎一般習慣)
+  const landline = /^0\d{1,2}-\d{6,8}$/;
+  return mobile.test(phone) || landline.test(phone);
+}
+function checkTenantPhone() {
+  if (!validatePhone(form.value.tenantPhone)&&form.value.tenantPhone != '') {
+    tenantPhoneError.value = '請輸入正確手機或市話號碼（市話請加區碼與"-"）';
+  } else {
+    tenantPhoneError.value = '';
+  }
+}
+
+
+
+
+
 
 
 
@@ -207,29 +247,3 @@ const submitContract = async () => {
 }
 </script>
 
-<style scoped>
-.form-area {
-  background: #fff; border-radius: 14px; padding: 28px 20px 16px 24px;
-  box-shadow: 0 2px 12px #88a8e633; max-width: 520px; margin: 20px 0;
-  display: flex; flex-direction: column; gap: 14px;
-}
-.input-row { display: flex; align-items: center; gap: 12px; }
-.input-row label { min-width: 105px; }
-input, select {
-  flex: 1; padding: 6px; border: 1px solid #bcd; border-radius: 6px;
-}
-.sign-row { margin-top: 10px; }
-.sign-btn {
-  background: #f3f9ff; color: #2767c7; border: 1.5px solid #88a8e6;
-  border-radius: 8px; padding: 7px 20px; cursor: pointer;
-}
-.contract-preview { background: #fff; border-radius: 14px; max-width: 700px;
-  box-shadow: 0 2px 12px #88a8e633; margin: 20px 0; padding: 28px 8vw 30px 8vw;
-}
-.preview-content { border: 1.5px solid #c3d7e5; border-radius: 10px; padding: 24px 18px; background: #f8fbff;}
-.confirm-check { margin: 18px 0 0 0; }
-.submit-btn { background: #2767c7; color: #fff; border: none; border-radius: 10px; padding: 10px 34px; font-size: 1.12em; cursor: pointer; margin-top: 10px;}
-.submit-btn:disabled { background: #a0bed7; color: #fff; }
-.back-btn { border: 1px solid #bbb; border-radius: 7px; background: #fff; padding: 8px 22px; color: #444; cursor: pointer;}
-.loading { color:#2767c7; margin-top:14px;}
-</style>

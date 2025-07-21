@@ -1,8 +1,8 @@
 <template>
   <div class="dashboard">
     <h2>房屋管理總覽</h2>
-            <section>
-<table>
+  <section>
+    <table>
       <thead>
         <tr>
           <th>房號</th>

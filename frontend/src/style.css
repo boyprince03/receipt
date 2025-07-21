@@ -135,3 +135,32 @@ button:focus-visible {
 input, button { width: 100%; margin-bottom: 10px; padding: 8px; }
 button { background: #0b72e7; color: #fff; border: none; border-radius: 6px;}
 button:disabled { background: #ccc; cursor: not-allowed; }
+
+/* contractsign.vue */
+
+input, select {
+  flex: 1; padding: 6px; border: 1px solid #bcd; border-radius: 6px;
+}
+.sign-row { margin-top: 10px; }
+.sign-btn {
+  background: #f3f9ff; color: #2767c7; border: 1.5px solid #88a8e6;
+  border-radius: 8px; padding: 7px 20px; cursor: pointer;
+}
+.contract-preview { background: #fff; border-radius: 14px; max-width: 700px;
+  box-shadow: 0 2px 12px #88a8e633; margin: 20px 0; padding: 28px 8vw 30px 8vw;
+}
+.preview-content { border: 1.5px solid #c3d7e5; border-radius: 10px; padding: 24px 18px; background: #f8fbff;}
+.confirm-check { margin: 18px 0 0 0; }
+.submit-btn { background: #2767c7; color: #fff; border: none; border-radius: 10px; padding: 10px 34px; font-size: 1.12em; cursor: pointer; margin-top: 10px;}
+.submit-btn:disabled { background: #a0bed7; color: #fff; }
+.back-btn { border: 1px solid #bbb; border-radius: 7px; background: #fff; padding: 8px 22px; color: #444; cursor: pointer;}
+.loading { color:#2767c7; margin-top:14px;}
+.error-text {
+  color: #d32f2f;         /* 明顯的紅色 */
+  font-size: 0.95em;      /* 稍微小一點 */
+  margin-top: 4px;        /* 和 input 保持間距 */
+  text-align: left;       /* 靠左更自然 */
+}
+.input-row {
+  margin-bottom: 18px;    /* 每一列多點間距，錯誤訊息就會明顯在下方 */
+}

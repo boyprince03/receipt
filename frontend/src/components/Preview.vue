@@ -315,61 +315,55 @@ function handleLandlordPwdOk() {
     <p>契約審閱權：本契約於中華民國 {{form.today}} 經承租人攜回審閱或放棄審閱之權利。</p>
 <!-- 簽名區塊 -->
 <table class="signature-table">
-  <tr>
-    <th>出租人簽章</th>
-    <th>承租人簽章</th>
-  </tr>
-  <tr>
-    <td>
-  <div class="signature-cell">
-    <img
-      :src="form.landlordSignature"
-      class="signature-img"
-      alt="出租人簽名"
-      style="cursor:pointer"
-      @click="showLandlordPwdModal = true"
-    />
-    <div class="sign-line"></div>
-    <div style="color:#888;font-size:0.92em;">點擊簽名（需密碼）</div>
-  </div>
-</td>
-<!-- 密碼輸入彈窗 -->
-<div v-if="showLandlordPwdModal" class="modal-mask">
-  <div class="modal-content">
-    <h4>請輸入房東簽名密碼</h4>
-    <input v-model="landlordPwdInput" type="password" placeholder="請輸入密碼" />
-    <div v-if="landlordPwdError" style="color:red;">{{ landlordPwdError }}</div>
-    <div style="margin-top:8px;">
-      <button @click="handleLandlordPwdOk">確認</button>
-      <button @click="showLandlordPwdModal = false" >取消</button>
+  <thead>
+    <tr>
+      <th>出租人簽章</th>
+      <th>承租人簽章</th>
+    </tr>
+    <tr>
+      <td>
+    <div class="signature-cell">
+      <img
+        :src="form.landlordSignature"
+        class="signature-img"
+        alt="出租人簽名"
+        style="cursor:pointer"
+        @click="showLandlordPwdModal = true"
+      />
+      <div class="sign-line"></div>
+      <div style="color:#888;font-size:0.92em;">點擊簽名（需密碼）</div>
+    </div>
+  </td>
+  <!-- 密碼輸入彈窗 -->
+  <div v-if="showLandlordPwdModal" class="modal-mask">
+    <div class="modal-content">
+      <h4>請輸入房東簽名密碼</h4>
+      <input v-model="landlordPwdInput" type="password" placeholder="請輸入密碼" />
+      <div v-if="landlordPwdError" style="color:red;">{{ landlordPwdError }}</div>
+      <div style="margin-top:8px;">
+        <button @click="handleLandlordPwdOk">確認</button>
+        <button @click="showLandlordPwdModal = false" >取消</button>
+      </div>
     </div>
   </div>
-</div>
-<Signature v-model:visible="showLandlordSignModal" @confirm="setLandlordSignature" />
+  <Signature v-model:visible="showLandlordSignModal" @confirm="setLandlordSignature" />
 
-
-    <td>
-      <div class="signature-cell">
-        <img
-          :src="form.signature"
-          class="signature-img"
-          alt="承租人簽名"
-          style="cursor:pointer"
-          @click="showSignModal = true"
-        />
-        <div class="sign-line"></div>
-        <div style="color:#888;font-size:0.92em;">點擊簽名</div>
-      </div>
-    </td>
-  </tr>
+      <td>
+        <div class="signature-cell">
+          <img
+            :src="form.signature"
+            class="signature-img"
+            alt="承租人簽名"
+            style="cursor:pointer"
+            @click="showSignModal = true"
+          />
+          <div class="sign-line"></div>
+          <div style="color:#888;font-size:0.92em;">點擊簽名</div>
+        </div>
+      </td>
+    </tr>
+  </thead>
 </table>
-<!-- 「前往簽名」按鈕也放這裡
-<div class="sign-row" style="text-align:center; margin-top:16px;">
-  <button type="button" @click="showSignModal = true" class="sign-btn">
-    前往簽名（再次簽名或修改）
-  </button>
-  <span v-if="form.signature">已完成簽名 <img :src="form.signature" style="height:36px; border:1px solid #aaa" /></span>
-</div> -->
 <!-- 簽名元件彈窗 -->
 <Signature v-model:visible="showSignModal" @confirm="setSignature" />
 

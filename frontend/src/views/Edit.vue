@@ -4,7 +4,7 @@
     <form @submit.prevent="handleSubmit">
       <div><label>房號：</label><input v-model="form.roomNo" readonly /></div>
       <div><label>姓名：</label><input v-model="form.tenantName" required /></div>
-      <div><label>租期（年）：</label><input type="number" step="0.01" v-model.number="form.rentYears" min="0.01" required /></div>
+      <div><label>租期（年）：</label><input type="number" step="0.5" v-model.number="form.rentYears" min="0.5" required /></div>
       <div><label>起租日：</label><input type="date" v-model="form.rentStart" required /></div>
       <div><label>到期日：</label><input type="date" v-model="form.rentEnd" required /></div>
       <div><label>租金：</label><input type="number" v-model="form.rentfee" required /></div>
